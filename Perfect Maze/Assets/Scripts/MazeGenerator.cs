@@ -8,17 +8,39 @@ public class MazeGenerator : MonoBehaviour
     [SerializeField]
     private MazeCell _mazeCellPrefab;
 
-    [SerializeField]
     private int _mazeWidth;
+    public int mazeWidth
+    {
+        get
+        {
+            return _mazeWidth;
+        }
+        set
+        {
+            _mazeWidth = value;
+        }
+    }
 
-    [SerializeField]
+
     private int _mazeDepth;
+    public int mazeDepth
+    {
+        get
+        {
+            return _mazeDepth;
+        }
+        set
+        {
+            _mazeDepth = value; 
+        }
+    }
 
     private MazeCell[,] _mazeGrid;
 
     //Line 20: Changed the traditional void of the Start method into an IEnumerator to generate the 
-    IEnumerator Start()
+    public IEnumerator StartMaze()
     {
+        Debug.Log(_mazeWidth + " " + _mazeDepth);
         //Lines 23 - 31: Generation of the maze grid based on _mazeWidth and _mazeDepth
         _mazeGrid = new MazeCell[_mazeWidth, _mazeDepth];
 
@@ -40,8 +62,8 @@ public class MazeGenerator : MonoBehaviour
         currentCell.Visit();
         //Uses the ClearWalls method to shape the now visited cell relative to how the generator approaches the now current cell from the previous cell.
         ClearWalls(previousCell, currentCell);
-        //Waits 0.05 seconds before moving on the next part of the method. This creates the effect of the maze generating on screen instead of instantanious.
-        yield return new WaitForSeconds(0.05f);
+        //Waits 0.01 seconds before moving on the next part of the method. This creates the effect of the maze generating on screen instead of instantanious.
+        yield return new WaitForSeconds(0.01f);
 
         MazeCell nextCell;
         
@@ -79,7 +101,6 @@ public class MazeGenerator : MonoBehaviour
 
             if (cellToRight.IsVisited == false)
             {
-                Debug.Log("Right");
                 yield return cellToRight;
             }
         }
@@ -90,7 +111,6 @@ public class MazeGenerator : MonoBehaviour
 
             if (cellToLeft.IsVisited == false)
             {
-                Debug.Log("Left");
                 yield return cellToLeft;
             }
         }
@@ -101,7 +121,6 @@ public class MazeGenerator : MonoBehaviour
 
             if (cellToFront.IsVisited == false)
             {
-                Debug.Log("Front");
                 yield return cellToFront;
             }
         }
@@ -112,7 +131,6 @@ public class MazeGenerator : MonoBehaviour
 
             if (cellToBack.IsVisited == false)
             {
-                Debug.Log("Back");
                 yield return cellToBack;
             }
         }
