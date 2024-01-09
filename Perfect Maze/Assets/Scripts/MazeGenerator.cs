@@ -31,61 +31,101 @@ public class MazeGenerator : MonoBehaviour
         }
         set
         {
-            _mazeDepth = value; 
+            _mazeDepth = value;
         }
     }
 
     private MazeCell[,] _mazeGrid;
 
-    //Line 20: Changed the traditional void of the Start method into an IEnumerator to generate the 
-    public IEnumerator StartMaze()
+    private void Start()
     {
-        Debug.Log(_mazeWidth + " " + _mazeDepth);
+        _mazeGrid = new MazeCell[250, 250];
+        for (int x = 0; x < 250; x++)
+        {
+            for (int z = 0; z < 250; z++)
+            {
+                _mazeGrid[x, z] = Instantiate(_mazeCellPrefab, new Vector3(x, 0, z), Quaternion.identity);
+            }
+        }
+    }
+
+    //Line 20: Changed the traditional void of the Start method into an IEnumerator to generate the 
+    //public IEnumerator StartMaze()
+    public void StartMaze()
+    {
+        //Debug.Log(_mazeWidth + " " + _mazeDepth);
         //Lines 23 - 31: Generation of the maze grid based on _mazeWidth and _mazeDepth
-        _mazeGrid = new MazeCell[_mazeWidth, _mazeDepth];
+        //_mazeGrid = new MazeCell[_mazeWidth, _mazeDepth];
+
+        //Line 33: Starts the Maze generation from MazeCell 0, 0 in the MazeGrid. As at the start, there is no previousCell yet, there's a null given in this parameter.
+        for (int x = 0; x < 250; x++)
+        {
+            for (int z = 0; z < 250; z++)
+            {
+                MazeCell currentCell = _mazeGrid[x, z];
+                currentCell.gameObject.SetActive(false);
+            }
+        }
 
         for (int x = 0; x < _mazeWidth; x++)
         {
             for (int z = 0; z < _mazeDepth; z++)
             {
-                _mazeGrid[x, z] = Instantiate(_mazeCellPrefab, new Vector3(x, 0, z), Quaternion.identity);
+                MazeCell currentCell = _mazeGrid[x, z];
+                currentCell.gameObject.SetActive(true);
+                currentCell.ResetBlock();
+
             }
         }
-        //Line 33: Starts the Maze generation from MazeCell 0, 0 in the MazeGrid. As at the start, there is no previousCell yet, there's a null given in this parameter.
-        yield return GenerateMaze(null, _mazeGrid[0, 0]);
+
+        GenerateMazeIterative(_mazeGrid[0, 0]);
     }
 
-
-    private IEnumerator GenerateMaze(MazeCell previousCell, MazeCell currentCell)
+    private void GenerateMazeIterative(MazeCell startCell)
     {
-        //Line 39 - 59: So long as there are unvisited cells in the CellGrid, this IEnumerator keeps visiting nearby unvisited cells.
-        currentCell.Visit();
-        //Uses the ClearWalls method to shape the now visited cell relative to how the generator approaches the now current cell from the previous cell.
-        ClearWalls(previousCell, currentCell);
-        //Waits 0.01 seconds before moving on the next part of the method. This creates the effect of the maze generating on screen instead of instantanious.
-        yield return new WaitForSeconds(0.01f);
+        Stack<MazeCell> usedCells = new Stack<MazeCell>();
+        Stack<MazeCell> activeCells = new Stack<MazeCell>();
+        activeCells.Push(startCell);
+        MazeCell previousCell = null;
 
-        MazeCell nextCell;
-        
-        do
+        while (activeCells.Count > 0 || usedCells.Count > 0)
         {
-            //tries to look for the nearest unvisited cells relative to the currentCell.
-            nextCell = GetNextUnvisitedCell(currentCell);
+            MazeCell currentCell;
 
-            //if an unvisited Cell has been found, Callback.
-            if (nextCell != null)
+            if (activeCells.Count > 0)
             {
-                yield return GenerateMaze(currentCell, nextCell);
-            }
-        } while (nextCell != null);
-    }
+                currentCell = activeCells.Pop();
+                IEnumerable<MazeCell> unvisitedCells = GetUnvisitedCells(currentCell);
+                MazeCell nextCell = unvisitedCells.OrderBy(_ => Random.Range(1, 10)).FirstOrDefault();
+                currentCell.Visit();
 
-    private MazeCell GetNextUnvisitedCell(MazeCell currentCell)
-    {
-        //Checks all unvisited cells left in the grid.
-        IEnumerable<MazeCell> unvisitedCells = GetUnvisitedCells(currentCell);
-        //shuffles the IEnumerable and returns the first MazeCell in the list.
-        return unvisitedCells.OrderBy(_ => Random.Range(1, 10)).FirstOrDefault();
+                if (nextCell != null)
+                {
+                    ClearWalls(previousCell, currentCell);
+                    activeCells.Push(nextCell);
+                    usedCells.Push(currentCell);
+                    previousCell = currentCell;
+                }
+            }
+            else
+            {
+                currentCell = usedCells.Pop();
+                IEnumerable<MazeCell> unvisitedCells = GetUnvisitedCells(currentCell);
+                //Debug.Log("Unvisited Cells: " + unvisitedCells.Count());
+                MazeCell nextCell = unvisitedCells.OrderBy(_ => Random.Range(1, 10)).FirstOrDefault();
+                currentCell.Visit();
+
+                if (nextCell != null)
+                {
+                    ClearWalls(previousCell, currentCell);
+                    activeCells.Push(nextCell);
+                    previousCell = currentCell;
+                }
+            }
+
+        }
+        Debug.Log(activeCells.Count + " " + usedCells.Count);
+
     }
 
     private IEnumerable<MazeCell> GetUnvisitedCells(MazeCell currentCell)

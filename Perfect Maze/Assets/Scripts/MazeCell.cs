@@ -21,7 +21,7 @@ public class MazeCell : MonoBehaviour
     //Lines 22 - 42: Methods to set walls of the MazeCell inactive to shape the MazeCell appropriately based on the generation of MazeGenerator.cs in which the methods get used.
     public void Visit()
     {
-        IsVisited= true;
+        IsVisited = true;
         _unvisitedBlock.SetActive(false);
     }
     public void ClearLeftWall()
@@ -39,5 +39,27 @@ public class MazeCell : MonoBehaviour
     public void ClearBackWall()
     {
         _backWall.SetActive(false);
+    }
+
+    public void ResetBlock()
+    {
+        if (IsVisited == true)
+        {
+            _unvisitedBlock.SetActive(true);
+
+            if (_leftWall.activeSelf == false)
+            _leftWall.SetActive(true);
+
+            if (_rightWall.activeSelf == false)
+                _rightWall.SetActive(true);
+            
+            if (_frontWall.activeSelf == false)
+                _frontWall.SetActive(true);
+            
+            if (_backWall.activeSelf == false)
+                _backWall.SetActive(true);
+
+            IsVisited = false;
+        }
     }
 }

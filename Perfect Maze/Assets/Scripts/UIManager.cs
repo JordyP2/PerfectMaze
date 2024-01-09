@@ -37,8 +37,9 @@ public class UIManager : MonoBehaviour
     {
         _mazeGenerator.mazeWidth = (int)_mazeWidthSlider.value;
         _mazeGenerator.mazeDepth = (int)_mazeDepthSlider.value;
-        Debug.Log(_mazeWidthSlider.value + " " + _mazeDepthSlider.value);
-        StartCoroutine(_mazeGenerator.StartMaze());
+        //Debug.Log(_mazeWidthSlider.value + " " + _mazeDepthSlider.value);
+        //StartCoroutine(_mazeGenerator.StartMaze());
+        _mazeGenerator.StartMaze();
     }
 
 }
