@@ -8,6 +8,8 @@ public class UIManager : MonoBehaviour
 {
     private MazeGenerator _mazeGenerator;
 
+    private GameObject _uiHeader;
+
     private Slider _mazeWidthSlider;
     private TMP_Text _mazeWidthText;
 
@@ -15,16 +17,27 @@ public class UIManager : MonoBehaviour
     private TMP_Text _mazeDepthText;
 
     private Button _generateMazeButton;
+    private GameObject _regenerateMazeButton;
+
 
     private void Start()
     {
         _mazeGenerator = GameObject.Find("Maze Generator").GetComponent<MazeGenerator>();
+
+        _uiHeader = GameObject.Find("UI Header");
+
         _mazeWidthSlider = GameObject.Find("Maze Width Slider").GetComponent<Slider>();
         _mazeWidthText = GameObject.Find("Maze Width Text").GetComponent<TMP_Text>();
+
         _mazeDepthSlider = GameObject.Find("Maze Depth Slider").GetComponent<Slider>();
         _mazeDepthText = GameObject.Find("Maze Depth Text").GetComponent<TMP_Text>();
+
         _generateMazeButton = GameObject.Find("UI Generate Maze Button").GetComponent<Button>();
+        _regenerateMazeButton = GameObject.Find("UI Regenerate Maze Button");
+
         _generateMazeButton.onClick.AddListener(OnGenerateMazeButtonClick);
+        _regenerateMazeButton.GetComponent<Button>().onClick.AddListener(OnRegenerateMazeButtonClick);
+        _regenerateMazeButton.SetActive(false);
     }
 
     private void OnGUI()
@@ -40,6 +53,13 @@ public class UIManager : MonoBehaviour
         //Debug.Log(_mazeWidthSlider.value + " " + _mazeDepthSlider.value);
         //StartCoroutine(_mazeGenerator.StartMaze());
         _mazeGenerator.StartMaze();
+        _uiHeader.SetActive(false);
+        _regenerateMazeButton.SetActive(true);
     }
 
+    private void OnRegenerateMazeButtonClick()
+    {
+        _regenerateMazeButton.SetActive(false);
+        _uiHeader.SetActive(true);
+    }
 }

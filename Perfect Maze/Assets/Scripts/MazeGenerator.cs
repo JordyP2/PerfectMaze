@@ -8,6 +8,9 @@ public class MazeGenerator : MonoBehaviour
     [SerializeField]
     private MazeCell _mazeCellPrefab;
 
+    [SerializeField]
+    private CameraManager _cameraManager;
+
     private int _mazeWidth;
     public int mazeWidth
     {
@@ -53,9 +56,7 @@ public class MazeGenerator : MonoBehaviour
     //public IEnumerator StartMaze()
     public void StartMaze()
     {
-        //Debug.Log(_mazeWidth + " " + _mazeDepth);
         //Lines 23 - 31: Generation of the maze grid based on _mazeWidth and _mazeDepth
-        //_mazeGrid = new MazeCell[_mazeWidth, _mazeDepth];
 
         //Line 33: Starts the Maze generation from MazeCell 0, 0 in the MazeGrid. As at the start, there is no previousCell yet, there's a null given in this parameter.
         for (int x = 0; x < 250; x++)
@@ -77,7 +78,7 @@ public class MazeGenerator : MonoBehaviour
 
             }
         }
-
+        _cameraManager.CalculateOrthoSize();
         GenerateMazeIterative(_mazeGrid[0, 0]);
     }
 
