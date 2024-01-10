@@ -99,10 +99,10 @@ public class MazeGenerator : MonoBehaviour
                 IEnumerable<MazeCell> unvisitedCells = GetUnvisitedCells(currentCell);
                 MazeCell nextCell = unvisitedCells.OrderBy(_ => Random.Range(1, 10)).FirstOrDefault();
                 currentCell.Visit();
+                ClearWalls(previousCell, currentCell);
 
                 if (nextCell != null)
                 {
-                    ClearWalls(previousCell, currentCell);
                     activeCells.Push(nextCell);
                     usedCells.Push(currentCell);
                     previousCell = currentCell;
@@ -118,7 +118,7 @@ public class MazeGenerator : MonoBehaviour
 
                 if (nextCell != null)
                 {
-                    ClearWalls(previousCell, currentCell);
+                ClearWalls(previousCell, currentCell);
                     activeCells.Push(nextCell);
                     previousCell = currentCell;
                 }
